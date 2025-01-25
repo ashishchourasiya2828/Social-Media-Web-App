@@ -195,3 +195,199 @@
       "message": "User not found"
     }
     ```
+
+# Posts API Documentation
+
+## Base URL
+`/posts`
+
+### 1. Create Post
+- **Endpoint:** `POST /create`
+- **Request Body:**
+  ```json
+  {
+    "content": "This is a new post",
+    "media": "url_to_media_file"
+  }
+  ```
+- **Response:**
+  - **201 Created**
+    ```json
+    {
+      "_id": "post_id",
+      "userId": "user_id",
+      "content": "This is a new post",
+      "media": "url_to_media_file",
+      "likes": [],
+      "comments": [],
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    }
+    ```
+  - **400 Bad Request**
+    ```json
+    {
+      "error": "Media is required"
+    }
+    ```
+
+### 2. Get All Posts
+- **Endpoint:** `GET /all-posts`
+- **Response:**
+  - **200 OK**
+    ```json
+    [
+      {
+        "_id": "post_id",
+        "userId": "user_id",
+        "content": "This is a new post",
+        "media": "url_to_media_file",
+        "likes": [],
+        "comments": [],
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      },
+      ...
+    ]
+    ```
+
+### 3. Get Posts by User
+- **Endpoint:** `GET /user/:id`
+- **Response:**
+  - **200 OK**
+    ```json
+    [
+      {
+        "_id": "post_id",
+        "userId": "user_id",
+        "content": "User's post content",
+        "media": "url_to_media_file",
+        "likes": [],
+        "comments": [],
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      },
+      ...
+    ]
+    ```
+  - **404 Not Found**
+    ```json
+    {
+      "error": "No posts found for this user"
+    }
+    ```
+
+### 4. Delete Post
+- **Endpoint:** `POST /:id/delete`
+- **Response:**
+  - **200 OK**
+    ```json
+    {
+      "message": "Post deleted"
+    }
+    ```
+  - **404 Not Found**
+    ```json
+    {
+      "error": "Post not found"
+    }
+    ```
+  - **401 Unauthorized**
+    ```json
+    {
+      "error": "Unauthorized"
+    }
+    ```
+
+### 5. Like Post
+- **Endpoint:** `POST /:id/like`
+- **Response:**
+  - **200 OK**
+    ```json
+    {
+      "message": "liked" // or "unliked"
+    }
+    ```
+  - **404 Not Found**
+    ```json
+    {
+      "error": "Post not found"
+    }
+    ```
+
+### 6. Comment on Post
+- **Endpoint:** `POST /:id/comment`
+- **Request Body:**
+  ```json
+  {
+    "content": "This is a comment"
+  }
+  ```
+- **Response:**
+  - **201 Created**
+    ```json
+    {
+      "_id": "comment_id",
+      "postId": "post_id",
+      "userId": "user_id",
+      "content": "This is a comment",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    }
+    ```
+  - **400 Bad Request**
+    ```json
+    {
+      "errors": [
+        {
+          "msg": "postId,userId and content fields are required"
+        }
+      ]
+    }
+    ```
+
+### 7. Get Comments on Post
+- **Endpoint:** `GET /:id/comments`
+- **Response:**
+  - **200 OK**
+    ```json
+    [
+      {
+        "_id": "comment_id",
+        "postId": "post_id",
+        "userId": "user_id",
+        "content": "This is a comment",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp"
+      },
+      ...
+    ]
+    ```
+  - **404 Not Found**
+    ```json
+    {
+      "error": "Post not found"
+    }
+    ```
+
+### 8. Delete Comment
+- **Endpoint:** `GET /comment/:id/delete`
+- **Response:**
+  - **200 OK**
+    ```json
+    {
+      "message": "Comment Deleted Successfully"
+    }
+    ```
+  - **404 Not Found**
+    ```json
+    {
+      "error": "comment not found"
+    }
+    ```
+  - **403 Forbidden**
+    ```json
+    {
+      "error": "Unauthorized Action userId is not match"
+    }
+    ```
