@@ -1,5 +1,6 @@
 const postModel = require('../models/post.model');
 const commentModel = require("../models/comment.model")
+const mongoose = require("mongoose")
 
 module.exports.createPost = async ({userId,content,media}) => {
     // console.log(userId,content,media);
@@ -75,21 +76,63 @@ module.exports.commentOnPost = async ({postId,userId,content})=>{
     if(!postId || !userId || !content){
         throw new Error("postId,userId and content fields are required")
     }
+    
+    try{
 
-    const comment = await commentModel.create({
-        postId,
-        userId,
-        content
-    })
+        const post = await postModel.findById(postId);
+
+        if(!post){
+            throw new Error("Post not found")
+        }
+
+
+        const comment = await commentModel.create([{
+            postId,
+            userId,
+            content
+        }])
+
+        if(!comment){
+            throw new Error("Failed to create comment")
+        }
+
+
+        post.comments.push(comment._id);
+        await post.save();
+
+        
+        
+        return comment;
+    }catch(err){
+        console.log(err);
+        throw new Error("Server error")
+    }
+
+}
+
+module.exports.deleteComment = async ({commentId,userId})=>{
+    if(!commentId || !userId){
+        throw new Error("userId or PostId required");
+    }
+
+    const comment = await commentModel.findById(commentId);
 
     if(!comment){
-        throw new Error("Failed to create comment")
+        return res.status(404).json({error:"comment not found"})
     }
 
-    const post = await postModel.findByIdAndUpdate(postId,{$push:{comments:comment._id}})
-    if(!post){
-        throw new Error("Failed to update post")
+    if(comment.userId.toString() !== userId.toString())
+    {
+        return res.status(403).json({error:"Unauthorized Action userId id is not match "})
     }
 
-    return comment;
+    await commentModel.findByIdAndDelete(commentId);
+
+    await postModel.findByIdAndUpdate(comment.postId,{
+        $pull:{comments:commentId}
+    })
+
+    return true;
+
+
 }

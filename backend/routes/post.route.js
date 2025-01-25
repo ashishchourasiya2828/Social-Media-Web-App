@@ -21,4 +21,6 @@ router.post("/:id/comment",createCommentValidator,authUser,postController.commen
 
 router.get("/:id/comments",authUser,postController.getComments);
 
+router.get("/comment/:id/delete",authUser,postController.deleteComment)
+
 module.exports = router;

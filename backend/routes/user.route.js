@@ -16,7 +16,7 @@ router.get('/:id/profile',authUser, controller.userProfile)
 
 router.put('/:id/update',authUser,controller.updateProfile)
 
-router.post('/reset-password',resetPasswordEmailValidator,authUser, controller.sendResetPasswordMail);
+router.post('/reset-password',resetPasswordEmailValidator, controller.sendResetPasswordMail);
 
 router.post('/reset-password/:token',  controller.resetPassword);
 

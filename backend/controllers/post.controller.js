@@ -134,11 +134,13 @@ module.exports.commentOnPost = async (req,res)=>{
         const userId = req.user._id;
         const {content} = req.body;
 
+        
+
        const comment =  await postService.commentOnPost({postId,userId,content});
 
          return res.status(201).json(comment);
     }catch(err){
-        return res.status(500).json({error:"Server error"})
+        return res.status(500).json({error:" internal Server error"})
     }
 
 }
@@ -158,5 +160,19 @@ module.exports.getComments = async (req,res)=>{
     }catch(err){
         console.log(err);
         return res.status(500).json({error:"Server error"})
+    }
+}
+
+module.exports.deleteComment = async (req,res)=>{
+    try{
+    const commentId = req.params.id;
+    const userId = req.user._id;
+
+    await postService.deleteComment({commentId,userId});
+   
+    return res.status(200).json({message:"Comment Deleted Successfully"})
+
+    }catch(err){
+        res.status(500).json({error:"internal one server error"});
     }
 }

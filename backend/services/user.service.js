@@ -26,7 +26,7 @@ module.exports.resetPasswordEmail = async function ({ user }) {
   const token = user.generateToken(); // Generate a token
   await setToken(`reset_${token}`, token, 600); // Store token in Redis with 10 min expiration
 
-  const resetLink = `http://localhost:4000/reset-password/${token}`;
+  const resetLink = `http://localhost:5173/reset-password/${token}`;
   const message = `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 10 minutes.</p>`;
 
   await sendEmail(email, "Password Reset", message);
@@ -34,7 +34,7 @@ module.exports.resetPasswordEmail = async function ({ user }) {
   return true;
 };
 
-module.exports.resetPassword = async function ({ token, password }) {
+module.exports.resetPassword = async function ({ token, password,res }) {
   if (!token || !password) {
     throw new Error("Token and password are required");
   }

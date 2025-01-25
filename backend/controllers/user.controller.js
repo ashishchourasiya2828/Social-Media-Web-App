@@ -28,9 +28,9 @@ module.exports.registerUser = async (req, res, next) => {
     password: hashedPassword,
   });
 
-  const token = newUser.generateToken();
+  // const token = newUser.generateToken();
 
-  res.status(201).json({ user: newUser, token });
+  res.status(201).json({ user: newUser});
 };
 
 module.exports.loginUser = async (req, res) => {
@@ -53,10 +53,14 @@ module.exports.loginUser = async (req, res) => {
 
   const token = user.generateToken();
 
-  res.cookie("token", token);
+  res.cookie("token", token,{
+    httpOnly:true,
+    secure:true,
+    sameSite:"Strict"
+  });
 
-  //    return res.status(200).json({user,token})
-  res.redirect(`/users/${user._id}/profile`);
+     return res.status(200).json({user,token})
+  // res.redirect(`/users/${user._id}/profile`);
 };
 
 module.exports.userProfile = async (req, res) => {
@@ -97,7 +101,11 @@ module.exports.resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
 
-  const user = await userService.resetPassword({ token, password });
+  const user = await userService.resetPassword({ token, password,res });
+
+  if(!user){
+    return res.status(404).json({error:"user not found "})
+  }
 
   user.password = await userModel.hashPassword(password);
 
