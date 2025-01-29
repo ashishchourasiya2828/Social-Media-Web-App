@@ -1,9 +1,10 @@
 const Redis = require("ioredis");
+const config = require("../config/config");
 
 const redisClient = new Redis({
-    port: 18906,
-    host: "redis-18906.c330.asia-south1-1.gce.redns.redis-cloud.com",
-    password: "T5ziCNNNtnFKag78MzdFyhcwOYoLJkHj"
+    port: config.REDIS_PORT,
+    host: config.REDIS_HOST,
+    password: config.REDIS_PASSWORD
 });
 
 redisClient.on("connect", () => {

@@ -7,6 +7,7 @@ import ForgotpasswordEmail from './pages/Forgot-passwordEmail'
 import ResetPassword from './pages/ResetPassword'
 import MailSend from './pages/MailSend'
 import UserProtector from './components/UserProtector'
+import Profile from './pages/Profile'
 
 const App = () => {
 
@@ -24,6 +25,11 @@ const App = () => {
           <UserProtector>
             <Home/>
           </UserProtector> } />
+          
+        <Route path='/profile' element={
+          <UserProtector>
+            <Profile/>
+          </UserProtector>} />  
 
         <Route path='/forgot-password' element={<ForgotpasswordEmail/>} />
         <Route path="/reset-password/Mail-Send" element={<MailSend/>} />

@@ -16,12 +16,10 @@ module.exports.createPost = async (req, res) => {
     }
 
     const media = req.file.path;
-
-     
-
     const {content} = req.body;
-    
     const userId = req.user._id;
+    // console.log(userId);
+    
     
 
  try{
@@ -50,8 +48,17 @@ module.exports.createPost = async (req, res) => {
 
 module.exports.getAllPosts = async (req, res) => {
     try {
-        const posts = await postModel.find().sort({ createdAt: -1 }).populate('userId', 'username profilePicture');
-        return res.status(200).json(posts);
+        const posts = await postModel.find()
+        .sort({ createdAt: -1 })
+        .populate('userId', 'username profilePicture')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'userId',
+                select: 'username profilePicture'
+            }
+        });
+       return res.status(200).json(posts);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: "Server error" });

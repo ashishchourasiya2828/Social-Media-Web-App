@@ -8,7 +8,6 @@ const UserContext = ({children}) => {
 
     const [token, settoken] = useState("")
 
-console.log(user);
     
   return (
     <userContext.Provider value={{user,setuser,settoken,token}} >

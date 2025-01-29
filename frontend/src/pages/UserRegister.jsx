@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
-import axios from 'axios'
 import { userContext } from '../context/UserContext'
 import { Link, useNavigate } from 'react-router-dom'
+import Axios from '../utils/Axios'
 
 const UserRegister = () => {
 
@@ -19,12 +19,11 @@ const UserRegister = () => {
             username,email,password
         }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`,user)
+    const response = await Axios.post('/users/register',user)
       
     const data = response.data.user
     setuser(data)  
     navigate('/')
-
     }
 
   return (

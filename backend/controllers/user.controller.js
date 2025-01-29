@@ -64,7 +64,26 @@ module.exports.loginUser = async (req, res) => {
 };
 
 module.exports.userProfile = async (req, res) => {
-  return res.status(200).json(req.user);
+  try {
+    const { id } = req.params;
+
+    console.log(id);
+    
+
+    const user = await userModel.findById(id)
+      .populate('posts')
+      .populate('followers', 'username profilePicture')
+      .populate('following', 'username profilePicture');
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports.logoutUser = async (req, res) => {
