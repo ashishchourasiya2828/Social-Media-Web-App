@@ -96,7 +96,7 @@ module.exports.profilePicture = async function ({ req,id }) {
     }
 
     const imageUrl = req.file.path; // Cloudinary URL of the uploaded image
-
+    
     if (!imageUrl) {
       return res.status(500).json({ error: 'Failed to get image URL' });
     }
@@ -107,5 +107,5 @@ module.exports.profilePicture = async function ({ req,id }) {
   
   
 
-   return user;
+   return imageUrl;
 }

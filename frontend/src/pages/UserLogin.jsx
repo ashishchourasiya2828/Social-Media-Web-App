@@ -17,6 +17,7 @@ const UserLogin = () => {
     
       if(response.status === 200){
         setuser(response.data.user)
+        
         settoken(response.data.token)
         navigate('/home')
         

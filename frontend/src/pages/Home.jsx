@@ -108,10 +108,19 @@ const Home = () => {
         </aside>
       </main>
 
+
       {/* Footer */}
       <footer className="mt-10 py-4 bg-gray-100 border-t border-gray-200 text-center text-gray-600 text-sm">
         &copy; 2025 SocialApp. All rights reserved.
       </footer>
+
+      <div className='w-full bg-red-500 flex items-center justify-around px-12 h-12 fixed bottom-0 left-0 z-9' >
+        <div> <h1><i className=" text-2xl ri-home-line"></i></h1> </div>
+        <div> <h1><i className=" text-2xl ri-add-line"></i></h1> </div>
+        <div> <h1><i className=" text-2xl ri-search-line"></i></h1> </div>
+      </div>
+      
+        
     </div>
   );
 };

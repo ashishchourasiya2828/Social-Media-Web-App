@@ -1,6 +1,8 @@
 import React from 'react'
 import UserRegister from './pages/UserRegister'
 import { Route, Routes } from 'react-router-dom'
+
+
 import UserLogin from './pages/UserLogin'
 import Home from './pages/Home'
 import ForgotpasswordEmail from './pages/Forgot-passwordEmail'
@@ -25,7 +27,7 @@ const App = () => {
           <UserProtector>
             <Home/>
           </UserProtector> } />
-          
+
         <Route path='/profile' element={
           <UserProtector>
             <Profile/>

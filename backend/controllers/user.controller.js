@@ -67,9 +67,6 @@ module.exports.userProfile = async (req, res) => {
   try {
     const { id } = req.params;
 
-    console.log(id);
-    
-
     const user = await userModel.findById(id)
       .populate('posts')
       .populate('followers', 'username profilePicture')
@@ -192,13 +189,13 @@ module.exports.updateProfilePicture = async (req, res) => {
         return res.status(401).json({message:"Unauthorized"})
     }
 
-   const user = await userService.profilePicture({req,id})
+   const imageUrl = await userService.profilePicture({req,id})
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!imageUrl) {
+      return res.status(404).json({ message: 'imageUrl not found' });
     }
 
-    res.status(201).json({ message: 'Image uploaded successfully', user });
+    res.status(201).json({ message: 'Image uploaded successfully', imageUrl });
   } catch (error) {
     console.error('Error uploading image:', error);
     res.status(500).json({ error: 'Failed to upload image' });
