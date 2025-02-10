@@ -1,7 +1,9 @@
-import React, { useContext, useState } from 'react'
-import { userContext } from '../context/UserContext'
+import React, {  useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { registerUser } from '../Slices/AuthSlice'
 import Axios from '../utils/Axios'
+
 
 const UserRegister = () => {
 
@@ -9,22 +11,28 @@ const UserRegister = () => {
     const [email, setemail] = useState("")
     const [password,setpasword] = useState("");
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-    const {setuser,settoken}  = useContext(userContext)
+    const {user,error} = useSelector(state => state.auth)
 
     const submitHandler = async (e)=>{
         e.preventDefault();
-        
-        const user = {
-            username,email,password
-        }
-
-    const response = await Axios.post('/users/register',user)
+    
+    await Axios.post('/users/register',{email,password,username}).then(response =>{
+      if(response.status === 201){
+        navigate('/')
+      }
+    }).catch(err =>{
+      console.log(err);
       
-    const data = response.data.user
-    setuser(data)  
-    navigate('/')
+    })
+    
+    setemail('')
+    setpasword("")
+    setusername("")
+
     }
+   
 
   return (
     <div>

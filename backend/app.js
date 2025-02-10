@@ -5,7 +5,10 @@ const cookieparser = require("cookie-parser")
 const rateLimit = require("express-rate-limit")
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(cookieparser())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

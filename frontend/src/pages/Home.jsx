@@ -1,33 +1,50 @@
-import React, { useContext, useEffect, useState } from "react";
-import Axios from "../utils/Axios";
-import { userContext } from "../context/UserContext";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPosts } from "../Slices/PostSlice";
+import Post from "../components/Post";
+import LikePanel from "../components/LikePanel";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [AllPosts, setAllPosts] = useState([])
+  const [likePanelOpen, setlikePanelOpen] = useState(false);
+  const [likedUserData, setlikedUserData] = useState([]);
+  const likePanelRef = useRef(null);
 
-  const {token} = useContext(userContext)
+  const { posts, loading, error } = useSelector((state) => state.posts);
+  const { user } = useSelector((state) => state.auth);
+  const token = useSelector((state) => state.auth.user?.token);
 
   useEffect(() => {
-   
-    const fetchAllPost = async ()=>{
-      const response = await Axios.get('/posts/all-posts',{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      })
-
-      setAllPosts(response.data);
-      
+    if (token) {
+      dispatch(fetchPosts());
+    } else {
+      navigate("/");
     }
-    fetchAllPost()
+  }, [dispatch, token]);
 
+  useGSAP(() => {
+    if (likePanelOpen) {
+      gsap.to(likePanelRef.current, {
+        transform: "translateY(0)",
+      });
+    } else {
+      gsap.to(likePanelRef.current, {
+        transform: "translateY(100%)",
+      });
+    }
+  }, [likePanelOpen]);
 
-  }, [])
-  
+  const likePanelData = (postId) => {
+    setlikedUserData(posts.find((post) => post._id === postId));
+  };
 
-
+  if (loading) return <p>Loading posts...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,9 +53,15 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">SocialApp</h1>
           <nav className="space-x-4">
-            <Link to="/home" className="text-gray-600 hover:text-gray-800">Home</Link>
-            <Link to="/profile" className="text-gray-600 hover:text-gray-800">Profile</Link>
-            <Link to="/setting" className="text-gray-600 hover:text-gray-800">Settings</Link>
+            <Link to="/home" className="text-gray-600 hover:text-gray-800">
+              Home
+            </Link>
+            <Link to="/profile" className="text-gray-600 hover:text-gray-800">
+              Profile
+            </Link>
+            <Link to="/setting" className="text-gray-600 hover:text-gray-800">
+              Settings
+            </Link>
           </nav>
         </div>
       </header>
@@ -58,32 +81,20 @@ const Home = () => {
 
           {/* Feed */}
           <div className="mt-6 space-y-6">
-            {
-              AllPosts.map(function(elem,key){
-                
-                return  <div key={key} className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div className="p-4 flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-300"></div>
-                  <p className="font-medium text-gray-700">{elem.userId.username}</p>
-                </div>
-                <div className="bg-gray-100 h-72 overflow-hidden ">
-                  <img src={elem.media} className="h-full w-full object-cover" alt="" />
-                </div>
-                <div className="p-4">
-                  <p className="text-gray-700 mb-2">{elem.content}</p>
-                  <div className="flex space-x-4">
-                    <button className="text-gray-600 hover:text-blue-500">Like</button>
-                    <button className="text-gray-600 hover:text-blue-500">Comment</button>
-                    <button className="text-gray-600 hover:text-blue-500">Share</button>
-                  </div>
-                </div>
-              </div>
-              })
-            }
+            {posts?.map(function (elem, key) {
+              
+              return (
+                <Post
+                  key={key}
+                  likePanelData={likePanelData}
+                  setlikePanelOpen={setlikePanelOpen}
+                  post={elem}
+                />
+              );
+            })}
           </div>
         </section>
 
-        {/* Sidebar */}
         <aside className="hidden md:block">
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
             <div className="flex items-center space-x-4">
@@ -108,19 +119,25 @@ const Home = () => {
         </aside>
       </main>
 
+      <div
+        ref={likePanelRef}
+        className="h-2/3 w-full fixed translate-y-full bottom-0 p-4  bg-gray-200 rounded-lg "
+      >
+        <LikePanel
+          likedUserData={likedUserData}
+          setlikePanelOpen={setlikePanelOpen}
+        />
+      </div>
 
-      {/* Footer */}
       <footer className="mt-10 py-4 bg-gray-100 border-t border-gray-200 text-center text-gray-600 text-sm">
         &copy; 2025 SocialApp. All rights reserved.
       </footer>
-
-      <div className='w-full bg-red-500 flex items-center justify-around px-12 h-12 fixed bottom-0 left-0 z-9' >
+      {/* 
+      <div className='w-full bg-red-500 flex items-center justify-between px-12 h-12 fixed bottom-0 left-0 z-9' >
         <div> <h1><i className=" text-2xl ri-home-line"></i></h1> </div>
         <div> <h1><i className=" text-2xl ri-add-line"></i></h1> </div>
         <div> <h1><i className=" text-2xl ri-search-line"></i></h1> </div>
-      </div>
-      
-        
+      </div> */}
     </div>
   );
 };

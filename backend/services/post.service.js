@@ -55,7 +55,7 @@ module.exports.likePost = async ({postId,userId})=>{
     const post = await postModel.findById(postId);
 
     if(!post){
-        res.status(404).json({error:"Post not found"})
+       return res.status(404).json({error:"Post not found"})
     }
 
     const liked = post.likes.includes(userId);

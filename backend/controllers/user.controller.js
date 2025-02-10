@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const userModel = require("../models/user.model");
 const userService = require("../services/user.service");
 const { setToken, getToken } = require("../utils/redis.utils");
+const { post } = require("../routes/user.route");
 
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -41,7 +42,11 @@ module.exports.loginUser = async (req, res) => {
 
   const { email, password } = req.body;
 
-  const user = await userModel.findOne({ email }).select("+password");
+  const user = await userModel.findOne({ email }).select("+password")
+  .populate('posts')
+  .populate('followers', 'username profilePicture')
+  .populate('following', 'username profilePicture');
+  
   if (!user) {
     return res.status(401).json({ message: "invalid email or password" });
   }
@@ -55,8 +60,8 @@ module.exports.loginUser = async (req, res) => {
 
   res.cookie("token", token,{
     httpOnly:true,
-    secure:true,
-    sameSite:"Strict"
+    // secure:true,
+    // sameSite:"Strict"
   });
 
      return res.status(200).json({user,token})

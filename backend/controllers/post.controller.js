@@ -51,6 +51,7 @@ module.exports.getAllPosts = async (req, res) => {
         const posts = await postModel.find()
         .sort({ createdAt: -1 })
         .populate('userId', 'username profilePicture')
+        .populate('likes', 'username profilePicture')
         .populate({
             path: 'comments',
             populate: {

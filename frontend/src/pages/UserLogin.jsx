@@ -1,31 +1,32 @@
 import React,{useContext, useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from "axios"
-import { userContext } from '../context/UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../Slices/AuthSlice';
 
 const UserLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const {setuser,settoken} = useContext(userContext)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const {user} = useSelector((state)=>state.auth)
   
     const loginHandler = async (e) => {
       e.preventDefault();
         
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`,{email,password})
-    
-      if(response.status === 200){
-        setuser(response.data.user)
-        
-        settoken(response.data.token)
+     const data = await dispatch(loginUser({email,password}))
+      
+
+      if(loginUser.fulfilled.match(data)){
         navigate('/home')
-        
       }
+      
 
       setEmail("")
       setPassword("")
     };
+
+    
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-xl">
