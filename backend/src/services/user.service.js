@@ -1,6 +1,6 @@
 const userModel = require("../models/user.model");
 const { setToken, getToken } = require("../utils/redis.utils");
-const sendEmail = require("../services/email");
+const sendEmail = require("./email");
 
 module.exports.registerUser = async function ({ email, password, username }) {
   // Validate input

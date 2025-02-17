@@ -33,21 +33,33 @@ const postsSlice = createSlice({
   },
   reducers: {
     updatePostLikes: (state, action) => {
-      const { postId, userId, isLiked } = action.payload;
-      const post = state.posts.find((p) => p._id === postId);
+      const { postId, user, isLiked } = action.payload;
+      const post = state.posts.find((post) => post._id === postId);
 
       if (post) {
         if (isLiked) {
-          // Unlike karna hai toh user ID hata do
-
-          post.likes = post.likes.filter((id) => id !== userId);
+          // Unlike: Remove user from likes array
+          post.likes = post.likes.filter((like) => like._id !== user._id);
         } else {
-          // Like karna hai toh user ID add kar do
-          post.likes.push(userId);
+          // Like: Add user to likes array
+          post.likes.push({ _id: user._id, username: user.username,profilePicture:user.profilePicture });
         }
       }
     },
+
+    updateComments:(state,action)=>{
+      const {postId,comment} = action.payload;
+      const post = state.posts.find((post)=>post._id === postId)
+      
+      if(post){
+        post.comments.push(comment)}
   },
+  createPost :(state,action)=>{
+    const {post} = action.payload;
+    state.posts.unshift(post)
+
+  }
+},
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state) => {
@@ -64,6 +76,6 @@ const postsSlice = createSlice({
   },
 });
 
-export const { updatePostLikes } = postsSlice.actions;
+export const { updatePostLikes,updateComments ,createPost} = postsSlice.actions;
 // Export Reducer
 export default postsSlice.reducer;

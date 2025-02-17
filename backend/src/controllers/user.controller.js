@@ -136,13 +136,25 @@ module.exports.resetPassword = async (req, res) => {
 };
 
 module.exports.updateProfile = async (req, res) => {
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     const { id } = req.params;
-    const { username, bio, profilePicture, email } = req.body;
+    const { username, bio,phoneNumber, email } = req.body;
+
+    if(id !== req.user._id.toString()){
+        return res.status(401).json({message:"Unauthorized"})
+    }
+
+    
 
     const updatedUser = await userModel.findByIdAndUpdate(
       id,
-      { username, email, bio }, // Fields to update
+      { username, email, bio,phoneNumber }, // Fields to update
       { new: true, runValidators: true } // Return the updated document
     );
 

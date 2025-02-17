@@ -1,6 +1,6 @@
-const app = require("./app")
+const app = require("./src/app")
 const http  = require("http")
-const config = require("./config/config")
+const config = require("./src/config/config")
 
 
 

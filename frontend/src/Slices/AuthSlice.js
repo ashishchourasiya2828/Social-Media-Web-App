@@ -49,7 +49,19 @@ const authSlice = createSlice({
                     state.user.user.following.push({ _id: userId, username, profilePicture });
                 }
             }
-        }
+        },
+
+        updateProfile: (state, action) => {
+          if (state.user) {
+            const { username, email, bio, phoneNumber } = action.payload;
+            
+            if (username !== undefined) state.user.user.username = username;
+            if (email !== undefined) state.user.user.email = email;
+            if (bio !== undefined) state.user.user.bio = bio;
+            if (phoneNumber !== undefined) state.user.user.phoneNumber = phoneNumber;
+          }
+        },
+
         
     },
     extraReducers: (builder) => {
@@ -79,5 +91,5 @@ const authSlice = createSlice({
     },
 });
 
-export const {  logout, updateProfileImage,followUnfollowUser } = authSlice.actions;
+export const {  logout, updateProfileImage,followUnfollowUser,updateProfile } = authSlice.actions;
 export default authSlice.reducer;

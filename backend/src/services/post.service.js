@@ -13,7 +13,7 @@ module.exports.createPost = async ({userId,content,media}) => {
         userId,
         content,
         media
-    })
+    }).then((p) => p.populate('userId', 'username profilePicture'));
 
    return newPost; 
 }
@@ -86,27 +86,30 @@ module.exports.commentOnPost = async ({postId,userId,content})=>{
         }
 
 
-        const comment = await commentModel.create([{
-            postId,
-            userId,
-            content
-        }])
+        const comment = await commentModel
+        .create({ postId, userId, content })
+        .then((c) => c.populate('userId', 'username profilePicture'));
 
         if(!comment){
             throw new Error("Failed to create comment")
         }
 
-
-        post.comments.push(comment._id);
-        await post.save();
-
         
+        
+        const updatedPost = await postModel.findByIdAndUpdate(postId,
+            { $push: { comments: comment._id }},
+            { new: true }
+    );
+        
+        
+        if(!updatedPost){
+            throw new Error("Failed to update post")
+        }
         
         return comment;
     }catch(err){
         console.log(err);
-        throw new Error("Server error")
-    }
+        return res.status(500).json({ error: "Server error" });    }
 
 }
 

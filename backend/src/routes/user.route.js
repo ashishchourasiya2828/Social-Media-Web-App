@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
+
 const {body,query,param} = require("express-validator")
 const controller = require("../controllers/user.controller");
 const { authUser } = require('../middleware/auth.middleware');
-const { registerUserValidator, loginUserValidator, resetPasswordEmailValidator, followUserValidator } = require('../middleware/userValidator.middleware');
+const { registerUserValidator, loginUserValidator, resetPasswordEmailValidator, followUserValidator, updateProfileValidator } = require('../middleware/userValidator.middleware');
 const {uploadProfilePicture} = require('../services/multer');
+
 
 router.post('/register',registerUserValidator, controller.registerUser)
 
@@ -14,7 +16,7 @@ router.get('/logout',authUser, controller.logoutUser)
 
 router.get('/:id/profile',authUser, controller.userProfile)
 
-router.put('/:id/update',authUser,controller.updateProfile)
+router.put('/:id/update',authUser,updateProfileValidator,controller.updateProfile)
 
 router.post('/reset-password',resetPasswordEmailValidator, controller.sendResetPasswordMail);
 

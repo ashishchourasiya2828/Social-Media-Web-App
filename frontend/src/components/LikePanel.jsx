@@ -1,7 +1,8 @@
 import React from 'react'
 
 const LikePanel = ({setlikePanelOpen,likedUserData}) => {
-    
+
+  
   return (
     <div>
           <div className="w-full  mb-3" ><i onClick={()=>{
@@ -9,7 +10,7 @@ const LikePanel = ({setlikePanelOpen,likedUserData}) => {
                     }} className="ri-arrow-left-line"></i>
                         </div>
                         
-        {likedUserData?.likes?.map((user,key)=>{
+        {likedUserData?.map((user,key)=>{
             
             return <div key={key}> 
                 

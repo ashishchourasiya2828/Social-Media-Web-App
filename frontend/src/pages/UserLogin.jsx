@@ -32,7 +32,7 @@ const UserLogin = () => {
     <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-xl">
       {/* Logo */}
       <div className="flex justify-center mb-6">
-        <h1 className="text-4xl mt-3 font-bold text-gray-700">Social Media App</h1>
+        <h1 className="text-4xl mt-3 font-bold text-gray-700">SnapGram</h1>
       </div>
 
       {/* Login Form */}

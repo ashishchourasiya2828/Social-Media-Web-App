@@ -56,7 +56,7 @@ module.exports.getAllPosts = async (req, res) => {
             path: 'comments',
             populate: {
                 path: 'userId',
-                select: 'username profilePicture'
+                select: 'username profilePicture content'
             }
         });
        return res.status(200).json(posts);

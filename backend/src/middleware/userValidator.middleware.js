@@ -29,3 +29,10 @@ exports.followUserValidator = [
 exports.updateProfilePictureValidator = [
     body('profilePicture').isURL().withMessage("Please enter a valid URL")
 ];
+
+exports.updateProfileValidator = [
+    body('username').isLength({min: 3,max:20}).withMessage("username must be at least 3 characters long and at most 20 characters long"),
+    body('email').isEmail().withMessage("Please enter a valid email"),
+    body('phoneNumber').optional({ checkFalsy: true }).isMobilePhone().withMessage("Please enter a valid phone number"),
+    body('bio').isLength({max: 200}).withMessage("Bio can be at most 200 characters long")
+]

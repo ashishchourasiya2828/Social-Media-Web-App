@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Axios from "../utils/Axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfileImage } from "../Slices/AuthSlice";
-import PostList from "../components/Post";
 
 const UserProfile = () => {
   const { user, error, loading } = useSelector(
     (state) => state.auth || { user: null, error: null, loading: false }
   );
-  
-  
-  
+
   const [profileImageURL, setprofileImageURL] = useState("");
   const [postPanelOpen, setpostPanelOpen] = useState(false);
   const [profileImagePanel, setprofileImagePanel] = useState(false);
@@ -23,10 +20,9 @@ const UserProfile = () => {
   const dispatch = useDispatch();
 
   const navigateHandler = () => {
-    navigate('/home');
+    navigate("/home");
   };
 
-  
   const profileImage = async (e) => {
     e.preventDefault();
 
@@ -99,7 +95,7 @@ const UserProfile = () => {
                   setprofileImagePanel(true);
                 }}
               >
-                <i className=" text-white font-bold ri-add-line"></i>
+                <i className=" text-white font-lg ri-pencil-line"></i>
               </h1>
             </div>
             <div className="h-[95%] w-full overflow-hidden rounded-full ">
@@ -140,14 +136,17 @@ const UserProfile = () => {
             {user?.user?.bio}
           </h2>
         </div>
-        <div className="w-full h-12 flex mt-6 justify-between items-center gap-3 ">
+        <div className="w-full h-12 flex mt-6  justify-between items-center gap-3 ">
           <div className="w-1/2 h-full  ">
-            <h1 className="border-zinc-200 bg-zinc-200 border-2 font-semibold text-zinc-700 py-2 rounded-[5vh] flex items-center justify-center  p-1">
-              Following <i className="  ri-arrow-down-double-line"></i>
-            </h1>
+            <Link
+              to="/edit-profile"
+              className="border-zinc-200 bg-blue-500 text-lg border-2 font-semibold text-white py-2 rounded-[5vh] flex items-center justify-center  p-1"
+            >
+              Edit Profile
+            </Link>
           </div>
           <div className="w-1/2 h-full  ">
-            <h1 className="border-zinc-200 bg-zinc-200 border-2 font-semibold text-zinc-700 py-2 rounded-[5vh] flex items-center justify-center  p-1">
+            <h1 className="border-zinc-200 bg-zinc-200 border-2 font-semibold text-lg text-zinc-700 py-2 rounded-[5vh] flex items-center justify-center  p-1">
               message
             </h1>
           </div>
@@ -156,19 +155,22 @@ const UserProfile = () => {
       {/* Posts Grid Section */}
       <div className="w-full mt-4  grid grid-cols-2 gap-2 bg-zinc-100">
         {user?.user?.posts?.map((post, index) => {
-            
-            return <div
-             key={index}
-             onClick={() => {
-                     }}
-             className="h-44 w-full mb-2 rounded-md  overflow-hidden"
-           >
-             <img
-               src={post.media}
-               alt="Post"
-               className="w-full h-full object-cover"
-             />
-           </div>
+          return (
+            <div
+              key={index}
+              onClick={() => {}}
+              className="h-44 w-full mb-2 rounded-md relative overflow-hidden"
+            >
+              <h1 className="text-lg font-bold text-black top-0 absolute right-0 " ><i className="ri-more-2-fill"></i></h1>
+              <div className="bg-gray-300 absolute p-2 h-fit hidden w-fit rounded right-0 top-4 " ><h1 className="font-semibold text-zinc-500" > <i className="ri-delete-bin-6-line"></i> </h1></div>
+              <img
+                src={post.media}
+                alt="Post"
+                className="w-full h-full object-cover"
+              />
+              
+            </div>
+          );
         })}
       </div>
 

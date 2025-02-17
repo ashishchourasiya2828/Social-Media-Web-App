@@ -10,6 +10,8 @@ import MailSend from "./pages/MailSend";
 import UserProtector from "./components/UserProtector";
 import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
+import EditProfile from "./pages/EditProfile";
+import CreatePost from "./pages/CreatePost";
 
 const App = () => {
   return (
@@ -22,6 +24,8 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/create-post" element={<CreatePost />} />
         </Route>
 
         <Route path="/forgot-password" element={<ForgotpasswordEmail />} />

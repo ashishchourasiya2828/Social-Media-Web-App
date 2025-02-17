@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
       },
       profilePicture: {
         type: String, // URL of the profile picture
-        // default: "https://res.cloudinary.com/djz3p",
+        default: "https://imgs.search.brave.com/REuuh4-rs82RFtBczrvN177wAUG4R7n6usMOySp70Bw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9pY29u/cy52ZXJ5aWNvbi5j/b20vcG5nLzEyOC9o/ZWFsdGhjYXRlLW1l/ZGljYWwvc29tZS1t/ZWRpY2FsLWFwcC1p/Y29ucy91c2VyLTE0/Ni5wbmc",
       },
       createdAt: {
         type: Date,
@@ -54,6 +54,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'user' 
       }],
+      phoneNumber:{
+        type: String,
+        match: [/^[0-9]{10}$/, 'Please enter a valid phone number']
+      }
 })
 
 userSchema.statics.hashPassword = async (password) => {

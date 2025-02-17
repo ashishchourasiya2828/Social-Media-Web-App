@@ -25,7 +25,7 @@ const ForgotpasswordEmail = () => {
       <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-xl">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <h1 className="text-4xl mt-1 font-bold text-gray-700">Social Media App</h1>
+          <h1 className="text-4xl mt-1 font-bold text-gray-700">SnapGram</h1>
         </div>
 
         {/* Forgot Password Form */}
