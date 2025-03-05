@@ -12,6 +12,16 @@ import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
 import EditProfile from "./pages/EditProfile";
 import CreatePost from "./pages/CreatePost";
+import BottomNavBar from "./components/BottomNavBar";
+
+const Layout = ({ children }) => {
+  return (
+    <div className="layout">
+      <div className="page-content">{children}</div>
+      <BottomNavBar/>
+    </div>
+  );
+};
 
 const App = () => {
   return (
@@ -21,11 +31,26 @@ const App = () => {
         <Route path="/register" element={<UserRegister />} />
 
         <Route element={<UserProtector />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/home" element={
+            <Layout>
+              <Home />
+
+            </Layout>
+            } />
+          <Route path="/profile" element={
+             <Layout>
+             <UserProfile />
+
+           </Layout>
+        } />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/create-post" element={
+            <Layout>
+              <CreatePost />
+
+            </Layout>
+            } />
         </Route>
 
         <Route path="/forgot-password" element={<ForgotpasswordEmail />} />
@@ -34,6 +59,8 @@ const App = () => {
       </Routes>
     </div>
   );
+
+ 
 };
 
 export default App;

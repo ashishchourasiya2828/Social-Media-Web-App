@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Axios from "../utils/Axios";
 import { updatePostLikes } from "../Slices/PostSlice";
 import { Link } from "react-router-dom";
 
-const Post = ({ post, setlikePanelOpen, likePanelData,setcommentPanel,setcommentPanelData }) => {
+const Post = ({ post, setlikePanelOpen, likePanelData,setcommentPanel,getCommentsForPost}) => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-
+  const [first, setfirst] = useState("")
   // const isliked = post.likes.includes(user?.user?._id)
   const isliked = post?.likes?.some((like) => like._id === user?.user?._id);
 
@@ -37,6 +37,8 @@ const Post = ({ post, setlikePanelOpen, likePanelData,setcommentPanel,setcomment
       console.log(err);
     }
   };
+
+  
 
   return (
     <div>
@@ -88,8 +90,8 @@ const Post = ({ post, setlikePanelOpen, likePanelData,setcommentPanel,setcomment
             <div className="flex items-center gap-2">
               <h1 className="flex items-center gap-1">
                 <i onClick={()=>{
+                  getCommentsForPost(post._id)
                   setcommentPanel(true)
-                  setcommentPanelData(post?._id)
                   }} className=" text-2xl ri-chat-3-line"></i>
               </h1>
               <h2>{post?.comments.length}</h2>

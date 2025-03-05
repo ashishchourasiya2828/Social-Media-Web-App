@@ -46,18 +46,17 @@ const postsSlice = createSlice({
         }
       }
     },
+  
 
-    updateComments:(state,action)=>{
-      const {postId,comment} = action.payload;
-      const post = state.posts.find((post)=>post._id === postId)
-      
-      if(post){
-        post.comments.push(comment)}
-  },
-  createPost :(state,action)=>{
+    createPost :(state,action)=>{
     const {post} = action.payload;
     state.posts.unshift(post)
 
+    },
+
+  deletePost:(state,action)=>{
+    const {postId} = action.payload;
+    state.posts = state.posts.filter((post)=>post._id !== postId)
   }
 },
   extraReducers: (builder) => {
@@ -76,6 +75,6 @@ const postsSlice = createSlice({
   },
 });
 
-export const { updatePostLikes,updateComments ,createPost} = postsSlice.actions;
+export const { updatePostLikes,updateComments ,createPost,deletePost} = postsSlice.actions;
 // Export Reducer
 export default postsSlice.reducer;

@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const postService = require("../services/post.service")
 const userModel = require("../models/user.model");
 const commentModel = require('../models/comment.model');
+const { default: mongoose, Types } = require('mongoose');
 
 module.exports.createPost = async (req, res) => {
 
@@ -96,6 +97,8 @@ module.exports.deletePost = async (req, res) => {
         const postId = req.params.id;
         const userId = req.user._id;
 
+        
+
         await postService.deletePost({postId,userId});
 
         const updatedResult = await userModel.findByIdAndUpdate(userId, {
@@ -140,11 +143,10 @@ module.exports.commentOnPost = async (req,res)=>{
     try{
         const postId = req.params.id;
         const userId = req.user._id;
-        const {content} = req.body;
-
+        const {content,parentCommentId} = req.body;
         
-
-       const comment =  await postService.commentOnPost({postId,userId,content});
+        
+       const comment =  await postService.commentOnPost({postId,userId,content,parentCommentId});
 
          return res.status(201).json(comment);
     }catch(err){
@@ -162,7 +164,80 @@ module.exports.getComments = async (req,res)=>{
             return res.status(404).json({ error: "Post not found" });
         }
 
-        const comments = await commentModel.find({postId}).populate('userId','username profilePicture');
+       const comments = await commentModel.aggregate([
+        {
+             $match: { postId: new mongoose.Types.ObjectId(postId),parentCommentId:null }
+        },
+        {
+            $lookup: {
+              from: "users",  // Jis collection se join karna hai
+              localField: "userId",  // Jo field match karni hai (comments.userId)
+              foreignField: "_id",  // Us collection mein jo primary key hai (users._id)
+              pipeline: [
+                { $project: { _id: 1, username: 1, profilePicture: 1 } }  // **Only required fields**
+            ],
+              as: "userData"  // Jo result array milega uska naam
+            }
+          },
+          { $unwind: "$userData" },
+       
+        {
+            $lookup: {
+              from: "comments",
+              localField: "_id",
+              foreignField: "parentCommentId",
+              as: "replies"
+            }
+          },
+          {
+            $lookup: {
+                from: "users",
+                localField: "replies.userId",
+                foreignField: "_id",
+                pipeline: [
+                    { $project: { _id: 1, username: 1, profilePicture: 1 } }  // **Only required fields**
+                ],
+                as: "repliesUserData"
+            }
+        },
+
+        {
+            $addFields: {
+                "replies": {
+                    $map: {
+                        input: "$replies",
+                        as: "reply",
+                        in: {
+                            $mergeObjects: [
+                                "$$reply",
+                                {
+                                    userData: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$repliesUserData",
+                                                    as: "user",
+                                                    cond: { $eq: ["$$user._id", "$$reply.userId"] }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        { $unset: "repliesUserData" }
+
+    
+        //   { $sort: { createdAt: -1 } } 
+
+       ])
+
+        // const comments = await commentModel.find({postId}).populate('userId','username profilePicture');
         
         return res.status(200).json(comments);
     }catch(err){

@@ -1,6 +1,6 @@
+const mongoose = require("mongoose")
 const postModel = require('../models/post.model');
 const commentModel = require("../models/comment.model")
-const mongoose = require("mongoose")
 
 module.exports.createPost = async ({userId,content,media}) => {
     // console.log(userId,content,media);
@@ -32,6 +32,13 @@ module.exports.deletePost = async ({postId,userId}) => {
 
         if(post.userId.toString() !== userId.toString()){
             return res.status(401).json({error:"Unauthorized"})
+        }
+
+        const comments = await commentModel.find({postId}).select("_id");
+
+        if(comments.length > 0){
+            await commentModel.deleteMany({postId});
+
         }
 
         const deletedPost = await postModel.findByIdAndDelete(postId);
@@ -72,7 +79,7 @@ module.exports.likePost = async ({postId,userId})=>{
 
 }
 
-module.exports.commentOnPost = async ({postId,userId,content})=>{
+module.exports.commentOnPost = async ({postId,userId,content,parentCommentId})=>{
     if(!postId || !userId || !content){
         throw new Error("postId,userId and content fields are required")
     }
@@ -87,12 +94,36 @@ module.exports.commentOnPost = async ({postId,userId,content})=>{
 
 
         const comment = await commentModel
-        .create({ postId, userId, content })
-        .then((c) => c.populate('userId', 'username profilePicture'));
+        .create({ postId, userId, content,parentCommentId : parentCommentId || null })
 
         if(!comment){
             throw new Error("Failed to create comment")
         }
+
+        const aggregatedComment = await commentModel.aggregate([
+            {
+              $match: { _id: comment._id } // Find the created comment
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, username: 1, profilePicture: 1 } }
+                ],
+                as: "userData"
+              }
+            },
+            { $unwind: "$userData" } // Convert userId array into an object
+          ]);
+
+
+if (!aggregatedComment.length) {
+    throw new Error("Failed to fetch comment with user details");
+  }
+
+  const finalComment = aggregatedComment[0]; // Extract the single result
 
         
         
@@ -106,7 +137,7 @@ module.exports.commentOnPost = async ({postId,userId,content})=>{
             throw new Error("Failed to update post")
         }
         
-        return comment;
+        return finalComment;
     }catch(err){
         console.log(err);
         return res.status(500).json({ error: "Server error" });    }

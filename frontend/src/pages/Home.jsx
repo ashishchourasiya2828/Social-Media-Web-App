@@ -9,6 +9,7 @@ import gsap from "gsap";
 import Comments from "../components/Comments";
 import Axios from "../utils/Axios";
 import { logout } from "../Slices/AuthSlice";
+import { addCommentsData } from "../Slices/CommentSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,6 @@ const Home = () => {
   const [commentPanel, setcommentPanel] = useState(false);
   const [likedUserData, setlikedUserData] = useState([]);
   const [isActiveforBgChange, setisActiveforBgChange] = useState("home");
-  const [commentPanelData, setcommentPanelData] = useState("");
   const likePanelRef = useRef(null);
   const commentPanelRef = useRef(null);
 
@@ -26,9 +26,7 @@ const Home = () => {
   const { user } = useSelector((state) => state.auth);
   const token = useSelector((state) => state.auth.user?.token);
 
-  const onClickOnIcon = (background) => {
-    setisActiveforBgChange(background);
-  };
+ 
 
   useEffect(() => {
     if (token) {
@@ -83,25 +81,23 @@ const Home = () => {
     setlikedUserData(post?.likes || []); // Ensure likedUsers exists
   };
 
-  const logoutUser = async () => {
-    try {
-      const response = await Axios.get(
-        "/users/logout",
-        {},
-        {
-          headers: {
-            authorization: `Bearer ${user?.token}`,
-          },
+  const getCommentsForPost = async(postId)=>{
+    try{
+      const response = await Axios.get(`/posts/${postId}/comments`,{},{
+        headers:{
+          Authorization:`Bearer ${user?.token}`
         }
-      );
-
-      if (response.status === 200) {
-        dispatch(logout());
-      }
-    } catch (err) {
+      })
+      dispatch(addCommentsData({data:response.data,postId:postId}))
+      
+      
+      
+    }catch(err){
       console.log(err);
+      
     }
-  };
+  }
+
 
   if (loading) return <p>Loading posts...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -113,14 +109,8 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">SnapGram</h1>
           <nav className="space-x-6  ">
-            <Link
-              onClick={() => {
-                logoutUser();
-              }}
-              className="text-gray-900 hover:text-gray-800"
-            >
-              <i className="text-xl font-bold ri-logout-box-r-line"></i>{" "}
-            </Link>
+           
+              <i className=" text-2xl font-lg ri-search-2-line"></i>
           </nav>
         </div>
       </header>
@@ -129,17 +119,17 @@ const Home = () => {
       <main className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         {/* Stories Section */}
         <section className="md:col-span-2">
-          <div className="flex overflow-x-auto space-x-4 py-2 scrollbar-hide">
+          {/* <div className="flex overflow-x-auto space-x-4 py-2 scrollbar-hide">
             {[...Array(10)].map((_, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-full bg-gray-300 border-2 border-blue-500"></div>
                 <p className="text-sm mt-2 text-gray-600">User {index + 1}</p>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Feed */}
-          <div className="mt-6 space-y-6">
+          <div className=" space-y-6">
             {posts?.map(function (elem, key) {
               return (
                 <Post
@@ -147,7 +137,7 @@ const Home = () => {
                   likePanelData={likePanelData}
                   setlikePanelOpen={setlikePanelOpen}
                   setcommentPanel={setcommentPanel}
-                  setcommentPanelData={setcommentPanelData}
+                  getCommentsForPost={getCommentsForPost}
                   post={elem}
                 />
               );
@@ -193,11 +183,10 @@ const Home = () => {
       {/* comment panel */}
       <div
         ref={commentPanelRef}
-        className="h-4/5 w-full fixed pt-2 translate-y-full px-4 z-10 border-2 overflow-y-auto  bg-gray-100 rounded-lg bottom-0"
+        className="h-4/5 w-full fixed pt-2 translate-y-full px-4 z-10 border-2 overflow-y-hidden  bg-gray-100 rounded-lg bottom-0"
       >
         <Comments
           setcommentPanel={setcommentPanel}
-          commentPanelData={commentPanelData}
         />
       </div>
 
@@ -205,52 +194,7 @@ const Home = () => {
         &copy; 2025 SocialApp. All rights reserved.
       </footer>
 
-      <div className="w-full bg-zinc-200 rounded-lg border-2 flex items-center justify-between  px-12 h-fit py-2 fixed bottom-0 left-0 z-9">
-        <div>
-          {" "}
-          <Link to="/home" className="text-gray-900 hover:text-gray-800">
-            <i
-              onClick={() => {
-                onClickOnIcon("home");
-              }}
-              className={` text-xl   ${
-                isActiveforBgChange === "home"
-                  ? "bg-zinc-700 text-zinc-200 rounded-full p-2"
-                  : "bg-transparent"
-              } font-bold ri-home-line`}
-            ></i>
-          </Link>
-        </div>
-        <div>
-          <Link className="text-gray-900 hover:text-gray-800" to="/create-post">
-            <i
-              onClick={() => {
-                onClickOnIcon("addPost");
-              }}
-              className={`text-2xl   ${
-                isActiveforBgChange === "addPost"
-                  ? "bg-zinc-700 text-zinc-200 rounded-full p-2"
-                  : "bg-transparent"
-              } font-bold ri-add-line`}
-            ></i>
-          </Link>
-        </div>
-        <div>
-          {" "}
-          <Link to="/profile" className="text-gray-900 hover:text-gray-800">
-            <i
-              onClick={() => {
-                onClickOnIcon("userProfile");
-              }}
-              className={` text-xl   ${
-                isActiveforBgChange === "userProfile"
-                  ? "bg-zinc-700 text-zinc-200 rounded-full p-2"
-                  : "bg-transparent"
-              } font-bold ri-user-line`}
-            ></i>
-          </Link>
-        </div>
-      </div>
+    
     </div>
   );
 };
